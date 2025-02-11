@@ -5,9 +5,17 @@ const app = express();
 const port = 3000;
 
 app.get("/", (req, res) => {
-    res.send("Hello world! Servidor rodando com express.");
+    res.send("Pagina Principal.");
 });
 
+app.get("/home", (req, res) => {
+    res.send("Pagina Home.");
+});
+
+
+app.get("/login", (req, res) => {
+    res.send("Pagina login.");
+});
 
 
 
