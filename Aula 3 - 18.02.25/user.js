@@ -6,5 +6,5 @@ class User {
     }
 }
 
-module.export = User; //exporta o módulo
+module.exports = User; //exporta o módulo
     
