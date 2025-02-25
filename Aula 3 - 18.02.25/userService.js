@@ -5,8 +5,8 @@ const fs = require("fs"); //Modulo para manipular arquivos (file system)
 class userService{
     constructor(){
         this.filePath = path.join(__dirname, 'user.json');
-        this.users = []; //Array para armazenar user
-        this.nextId = 1; //Contador para gerar o id
+        this.users = this.loadUser(); //Array para armazenar user
+        this.nextId = this.getNextID(); //Contador para gerar o id
     }
 
     loadUser(){
@@ -21,24 +21,40 @@ class userService{
     return[]; 
 }
 
-
-    getNextID(){
+//definir próximo id a ser utilizado
+    getNextID(){// função para buscar o próximo id
         try{
-        if(this.user.length===0) return 1;
+        if(this.users.length===0) return 1;
         return Math.max(...this.users.map(user=>user.id)) +1;
         }catch(erro){
-            console.log("Erro ao buscar o próximo id");
+            console.log("Erro ao buscar o próximo id", erro);
         }
 }
 
+    saveUsers(){
+        try{
+            fs.writeFileSync(this.filePath, JSON.stringify(this.users));
+        }catch(erro){
+            console.log("Erro ao salvar um usuário", erro);
+        }
+    }
 
-    addUser(nome, email){
-        const user = new User(this.nextId++, nome, email);
+    addUser(nome, email, senha, endereco, telefone, cpf){
+        try{
+        const user = new User(this.nextId++, nome, email, senha, endereco, telefone, cpf);
         this.users.push(user)
+        this.saveUsers();
         return user;
+        }catch(erro){
+            console.log("Erro ao adicionar um usuário", erro);
+        }
     }
     getUser(){
-        return this.users
+        try{
+            return this.users
+        }catch(erro){
+            console.log("Erro ao buscar um usuário", erro);
+        }
     }
 }
 
