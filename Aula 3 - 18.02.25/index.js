@@ -16,10 +16,29 @@ app.post("/users", (req, res) => {
     res.status(200).json({ user });
 })
 
-// Rota ara listar todos os usuários
+app.delete("/users/:id", (req, res) => {
+    const id = parseInt(req.params.id);
+    try{
+        const resultado = userService.deleteUser(id);
+        res.status(200).json(resultado);
+    }catch(erro){
+        res.status(400).json({error: erro.message});
+    }
+})
 
 app.get("/users", (req, res) => {
     res.json(userService.getUser());
+})
+
+app.put("/users/:id", (req, res) => {
+    const id = parseInt(req.params.id);
+    const { nome, email, senha, endereco, telefone, cpf } = req.body;
+    try{
+        const resultado = userService.alterUser(id, nome, email, senha, endereco, telefone, cpf);
+        res.status(200).json(resultado);
+    }catch(erro){
+        res.status(400).json({error: erro.message});
+    }
 })
 
 const port = 3000
