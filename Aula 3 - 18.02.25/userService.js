@@ -1,6 +1,7 @@
 const User = require("./user");
 const path = require("path");//Modulo para manipular caminhos
 const fs = require("fs"); //Modulo para manipular arquivos (file system)
+const bcrypt = require("bcryptjs"); //Modulo para criptografar senha
 
 class userService{
     constructor(){
@@ -12,7 +13,7 @@ class userService{
     loadUser(){
         try{
         if(fs.existsSync(this.filePath)){
-            const data = fs.readFileSync(this.filePath)
+            const data = fs.readFileSync(this.filePath);
             return JSON.parse(data)
         }
     }catch(erro){
@@ -39,9 +40,10 @@ class userService{
         }
     }
 
-    addUser(nome, email, senha, endereco, telefone, cpf){
+    async addUser(nome, email, senha, endereco, telefone, cpf){ //async: função assíncrona 
         try{
-        const user = new User(this.nextId++, nome, email, senha, endereco, telefone, cpf);
+            const senhaCrip = await bcrypt.hash(senha, 10); //await: só segue pro próximo passo quando a função terminar, numero 1-10 é o nível de criptografia
+        const user = new User(this.nextId++, nome, email, senhaCrip, endereco, telefone, cpf);
         this.users.push(user)
         this.saveUsers();
         return user;
@@ -59,13 +61,14 @@ class userService{
         }
     }
 
-    alterUser(id, nome, email, senha, endereco, telefone, cpf){
+    async alterUser(id, nome, email, senha, endereco, telefone, cpf){
         try{
+            const senhaCrip = await bcrypt.hash(senha, 10); //await: só segue pro próximo passo quando a função terminar, numero 1-10 é o nível de criptografia
             const user = this.users.find(user => user.id === id);
             if(!user) throw new Error("Usuário não encontrado");
             user.nome = nome;
             user.email = email;
-            user.senha = senha;
+            user.senha = senhaCrip;
             user.endereco = endereco;
             user.telefone = telefone;
             user.cpf = cpf;
