@@ -7,13 +7,18 @@ app.use(express.json()); // Vou habilitar json no express
 // Rota para entrar usuário
 
 app.post("/users", async (req, res) => { //async: função assíncrona depois da rota
-    const { nome, email, senha, endereco, telefone, cpf } = req.body;
-    if (!nome || !email || !senha ||!endereco || !telefone || !cpf) {
-        return res.status(400).json
+    try{
+
+        const { nome, email, senha, endereco, telefone, cpf } = req.body;
+        if (!nome || !email || !senha ||!endereco || !telefone || !cpf) {
+            return res.status(400).json
             ({ error: "Nome, email, senha, endereço, telefone e CPF são obrigatórios" })
+        }
+        const user = await userService.addUser(nome, email, senha, endereco, telefone, cpf);
+        res.status(200).json({ user });
+    }catch(erro){
+        res.status(400).json({error: erro.message});
     }
-    const user = await userService.addUser(nome, email, senha, endereco, telefone, cpf);
-    res.status(200).json({ user });
 })
 
 app.delete("/users/:id", (req, res) => {
@@ -27,7 +32,11 @@ app.delete("/users/:id", (req, res) => {
 })
 
 app.get("/users", (req, res) => {
-    res.json(userService.getUser());
+    try{    
+        res.json(userService.getUser());
+    }catch(erro){
+        res.status(400).json({error: erro.message});
+    }
 })
 
 app.put("/users/:id", async (req, res) => {
